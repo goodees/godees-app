@@ -64,7 +64,8 @@
                             <releaseProfile>release-profile</releaseProfile>
                         </releaseProfiles>
                         <pushTags>false</pushTags>
-                        <versionNamer><delimiter>-</delimiter></versionNamer>
+                        <versionNamer><delimiter>.</delimiter></versionNamer>
+                        <noChangesAction>ReleaseNone</noChangesAction>
                     </configuration>
                 </plugin>
             </plugins>
