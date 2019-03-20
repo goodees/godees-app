@@ -3,7 +3,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>io.github.goodees</groupId>
     <artifactId>goodees-app-root</artifactId>
-    <version>0-SNAPSHOT</version>
+    <version>1-SNAPSHOT</version>
     <packaging>pom</packaging>
     
     <name>Goodees App starters</name>
@@ -24,6 +24,7 @@
     <inceptionYear>2019</inceptionYear>
     <properties>
         <license.licenseName>apache_v2</license.licenseName>
+        <version.plugin.mmm-release>3.0.3</version.plugin.mmm-release>
     </properties>
     <developers>
         <developer>
@@ -34,26 +35,26 @@
     </developers>
     <scm>
         <url>https://github.com/goodees/goodees</url>
-        <connection>scm:git:https://github.com/goodees/goodees-app.git</connection>
-        <developerConnection>scm:git:https://github.com/goodees/goodees-app.git</developerConnection>
+        <!-- <connection>scm:git:https://github.com/goodees/goodees-app.git</connection>
+        <developerConnection>scm:git:https://github.com/goodees/goodees-app.git</developerConnection> -->
+        <connection>scm:git:../goodees-app-staging</connection>
+        <developerConnection>scm:git:../goodees-app-staging</developerConnection>
+
         <tag>HEAD</tag>
     </scm>
     
     <modules>
-        <module>godees-app-parent-ee8</module>
+        <module>goodees-app-parent-ee8</module>
         <module>app-payara-micro</module>
     </modules>
-    <dependencyManagement>
-        <dependencies>
-        </dependencies>
-    </dependencyManagement>
+
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
                     <groupId>com.github.danielflower.mavenplugins</groupId>
                     <artifactId>multi-module-maven-release-plugin</artifactId>
-                    <version>3.0.3</version>
+                    <version>${version.plugin-mmm-release}</version>
                     <configuration>
                         <releaseGoals>
                             <releaseGoal>clean</releaseGoal>
@@ -63,12 +64,25 @@
                             <releaseProfile>release-profile</releaseProfile>
                         </releaseProfiles>
                         <pushTags>false</pushTags>
+                        <versionNamer><delimiter>-</delimiter></versionNamer>
                     </configuration>
                 </plugin>
             </plugins>
         </pluginManagement>
     </build>
     <profiles>
+        <profile>
+            <!-- We don't want release in parent for consumption, so we cheat with a profile -->
+            <id>invoke-releaser</id>
+            <activation>
+                <property>
+                    <name>releaser</name>
+                </property>
+            </activation>
+            <build>
+                <defaultGoal>com.github.danielflower.mavenplugins:multi-module-maven-release-plugin:${version.plugin.mmm-release}:${releaser}</defaultGoal>
+            </build>
+        </profile>
         <profile>
             <id>release-profile</id>
             <build>
