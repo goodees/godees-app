@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>io.github.goodees</groupId>
+        <artifactId>godees-app-parent-ee8</artifactId>
+        <version>0-SNAPSHOT</version>
+        <relativePath>../godees-app-aprent-ee8/</relativePath>
+    </parent>
+    <groupId>io.github.goodees</groupId>
+    <artifactId>app-payara-micro</artifactId>
+    <version>5.191-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    
+    <name>Payara Micro App</name>
+
+    <description>Defaults for app using payara micro</description>
+    
+    <properties>
+        <version.payara>5.191</version.payara>
+        <version.microprofile>2.0.1</version.microprofile>
+    </properties>
+
+    <dependencies>
+    <dependency>
+      <groupId>org.eclipse.microprofile</groupId>
+      <artifactId>microprofile</artifactId>
+      <version>${version.microprofile}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    </dependencies>
+
+
+    <dependencyManagement>
+
+    </dependencyManagement>
+    <build>
+        <pluginManagement>
+            <plugins>
+          <plugin>
+            <groupId>fish.payara.maven.plugins</groupId>
+            <artifactId>payara-micro-maven-plugin</artifactId>
+            <version>1.0.3</version>
+            <configuration>
+              <payaraVersion>${version.payara}</payaraVersion>
+              <deployWar>true</deployWar>
+              <javaCommandLineOptions>
+                <option>
+                  <value>-Xdebug</value>
+                </option>
+                <option>
+                  <key>-Xrunjdwp:transport</key>
+                  <value>dt_socket,server=y,suspend=n,address=5005</value>
+                </option>
+              </javaCommandLineOptions>
+              <commandLineOptions>
+                <option>
+                  <key>--rootdir</key>
+                  <value>${project.build.directory}/micro</value>
+                </option>
+                <option>
+                  <key>--nocluster</key>
+                </option>
+              </commandLineOptions>
+            </configuration>
+          </plugin>
+        </plugins>
+        </pluginManagement>
+    </build>
+    <profiles>
+    </profiles>
+</project>

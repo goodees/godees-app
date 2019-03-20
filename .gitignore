@@ -1,0 +1,10 @@
+target/
+*.log
+nb-configuration.xml
+nbproject/
+.project
+.settings/
+.classpath
+.factorypath
+.idea/
+.vscode/settings.json

@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>io.github.goodees</groupId>
+    <artifactId>goodees-app-root</artifactId>
+    <version>0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+    
+    <name>Goodees App starters</name>
+
+    <description>Useful set of parent POMs, BOMs and dependency aggregators</description>
+    
+    <url>https://github.com/goodees/goodees-app</url>
+    <licenses>
+        <license>
+            <name>Apache License 2.0</name>
+            <url> http://www.apache.org/licenses/</url>
+        </license>
+    </licenses>
+    <organization>
+        <name>Patrik Duditš</name>
+        <url>https://pdudits.github.io</url>
+    </organization>
+    <inceptionYear>2019</inceptionYear>
+    <properties>
+        <license.licenseName>apache_v2</license.licenseName>
+    </properties>
+    <developers>
+        <developer>
+            <name>Patrik Duditš</name>
+            <email>goodees@dudits.net</email>
+            <url>http://pdudits.github.io/</url>
+        </developer>
+    </developers>
+    <scm>
+        <url>https://github.com/goodees/goodees</url>
+        <connection>scm:git:https://github.com/goodees/goodees-app.git</connection>
+        <developerConnection>scm:git:https://github.com/goodees/goodees-app.git</developerConnection>
+        <tag>HEAD</tag>
+    </scm>
+    
+    <modules>
+        <module>godees-app-parent-ee8</module>
+        <module>app-payara-micro</module>
+    </modules>
+    <dependencyManagement>
+        <dependencies>
+        </dependencies>
+    </dependencyManagement>
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>com.github.danielflower.mavenplugins</groupId>
+                    <artifactId>multi-module-maven-release-plugin</artifactId>
+                    <version>3.0.3</version>
+                    <configuration>
+                        <releaseGoals>
+                            <releaseGoal>clean</releaseGoal>
+                            <releaseGoal>install</releaseGoal>
+                        </releaseGoals>
+                        <releaseProfiles>
+                            <releaseProfile>release-profile</releaseProfile>
+                        </releaseProfiles>
+                        <pushTags>false</pushTags>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
+    <profiles>
+        <profile>
+            <id>release-profile</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-gpg-plugin</artifactId>
+                        <version>1.6</version>
+                        <executions>
+                            <execution>
+                                <id>sign-artifacts</id>
+                                <phase>verify</phase>
+                                <goals>
+                                    <goal>sign</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>            
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
+</project>
