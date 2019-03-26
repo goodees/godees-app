@@ -46,6 +46,7 @@
     <modules>
         <module>goodees-app-parent-ee8</module>
         <module>app-payara-micro</module>
+        <module>app-junit4</module>
     </modules>
 
     <build>

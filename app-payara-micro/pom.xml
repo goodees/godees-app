@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.github.goodees</groupId>
@@ -11,24 +12,30 @@
     <artifactId>app-payara-micro</artifactId>
     <version>5.191-SNAPSHOT</version>
     <packaging>pom</packaging>
-    
+
     <name>Payara Micro App</name>
 
     <description>Defaults for app using payara micro</description>
-    
+
     <properties>
         <version.payara>5.191</version.payara>
         <version.microprofile>2.0.1</version.microprofile>
     </properties>
 
     <dependencies>
-    <dependency>
-      <groupId>org.eclipse.microprofile</groupId>
-      <artifactId>microprofile</artifactId>
-      <version>${version.microprofile}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
+        <dependency>
+            <groupId>org.eclipse.microprofile</groupId>
+            <artifactId>microprofile</artifactId>
+            <version>${version.microprofile}</version>
+            <type>pom</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>fish.payara.arquillian</groupId>
+            <artifactId>arquillian-payara-micro-5-managed</artifactId>
+            <version>1.0.Beta3</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 
@@ -36,38 +43,129 @@
 
     </dependencyManagement>
     <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>fish.payara.extras</groupId>
+                                    <artifactId>payara-micro</artifactId>
+                                    <version>${version.payara}</version>
+                                    <overWrite>false</overWrite>
+                                    <outputDirectory>${session.executionRootDirectory}/target/</outputDirectory>
+                                    <destFileName>payara-micro-${version.payara}.jar</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-clean-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>clean-micro-apps</id>
+                        <phase>pre-integration-test</phase>
+                        <goals>
+                            <goal>
+                                clean
+                            </goal>
+                        </goals>
+                        <configuration>
+                            <filesets>
+                                <fileset>
+                                    <directory>${session.executionRootDirectory}/target/micro/applications</directory>
+                                </fileset>
+                            </filesets>
+                            <failOnError>false</failOnError>
+                            <excludeDefaultDirectories>true</excludeDefaultDirectories>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
         <pluginManagement>
             <plugins>
-          <plugin>
-            <groupId>fish.payara.maven.plugins</groupId>
-            <artifactId>payara-micro-maven-plugin</artifactId>
-            <version>1.0.3</version>
-            <configuration>
-              <payaraVersion>${version.payara}</payaraVersion>
-              <deployWar>true</deployWar>
-              <javaCommandLineOptions>
-                <option>
-                  <value>-Xdebug</value>
-                </option>
-                <option>
-                  <key>-Xrunjdwp:transport</key>
-                  <value>dt_socket,server=y,suspend=n,address=5005</value>
-                </option>
-              </javaCommandLineOptions>
-              <commandLineOptions>
-                <option>
-                  <key>--rootdir</key>
-                  <value>${project.build.directory}/micro</value>
-                </option>
-                <option>
-                  <key>--nocluster</key>
-                </option>
-              </commandLineOptions>
-            </configuration>
-          </plugin>
-        </plugins>
+                <plugin>
+                    <groupId>fish.payara.maven.plugins</groupId>
+                    <artifactId>payara-micro-maven-plugin</artifactId>
+                    <version>1.0.3</version>
+                    <configuration>
+                        <payaraVersion>${version.payara}</payaraVersion>
+                        <deployWar>true</deployWar>
+                        <commandLineOptions>
+                            <option>
+                                <key>--rootdir</key>
+                                <value>${project.build.directory}/micro</value>
+                            </option>
+                            <option>
+                                <key>--nocluster</key>
+                            </option>
+                        </commandLineOptions>
+                    </configuration>
+                </plugin>
+                <plugin>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <version>2.19.1</version>
+                    <configuration>
+                        <trimStackTrace>false</trimStackTrace>
+                        <systemProperties>
+                            <payara.microJar>
+                                ${session.executionRootDirectory}/target/payara-micro-${version.payara}.jar
+                            </payara.microJar>
+                            <payara.clusterEnabled>false</payara.clusterEnabled>
+                            <payara.extraMicroOptions>--rootDir ${session.executionRootDirectory}/target/micro
+                            </payara.extraMicroOptions>
+                        </systemProperties>
+                    </configuration>
+                </plugin>
+            </plugins>
         </pluginManagement>
     </build>
     <profiles>
+        <profile>
+            <id>debug</id>
+            <activation>
+                <property>
+                    <name>debug</name>
+                </property>
+            </activation>
+            <properties>
+                <debug.port>5005</debug.port>
+                <debug.suspend>n</debug.suspend>
+            </properties>
+            <build>
+                <pluginManagement>
+                    <plugins>
+                        <plugin>
+                            <groupId>fish.payara.maven.plugins</groupId>
+                            <artifactId>payara-micro-maven-plugin</artifactId>
+                            <configuration>
+                                <javaCommandLineOptions combine.children="append">
+                                    <option>
+                                        <value>-Xdebug</value>
+                                    </option>
+                                    <option>
+                                        <key>-Xrunjdwp:transport</key>
+                                        <value>dt_socket,server=y,suspend=${debug.suspend},address=${debug.port}</value>
+                                    </option>
+                                </javaCommandLineOptions>
+                            </configuration>
+                        </plugin>
+                    </plugins>
+                </pluginManagement>
+            </build>
+
+        </profile>
     </profiles>
 </project>
